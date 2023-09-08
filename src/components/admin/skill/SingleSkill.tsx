@@ -1,18 +1,18 @@
 "use client";
 import Modal from "@/components/Modal";
 import {
-  Section,
-  DeleteSectionDocument,
-  DeleteSectionMutation,
-  DeleteSectionMutationVariables,
-  GetOneSectionDocument,
-  GetOneSectionQuery,
-  GetOneSectionQueryVariables,
+  Skill,
+  DeleteSkillDocument,
+  DeleteSkillMutation,
+  DeleteSkillMutationVariables,
+  GetOneSkillDocument,
+  GetOneSkillQuery,
+  GetOneSkillQueryVariables,
 } from "@/gql/graphql";
 import {  useState } from "react";
 import { OperationResult, useMutation, useQuery } from "urql";
-import EditSection from "./EditSkill";
-import CreateSection from "./CreateSkill";
+import EditSkill from "./EditSkill";
+import CreateSkill from "./CreateSkill";
 
 interface Props {
   id: number;
@@ -21,35 +21,36 @@ interface Props {
   setIsCreate: React.Dispatch<React.SetStateAction<boolean>>;
   isEdit: boolean;
   setIsEdit: React.Dispatch<React.SetStateAction<boolean>>;
-  data: Section[];
-  setData: React.Dispatch<React.SetStateAction<Section[]>>;
+  data: Skill[];
+  setData: React.Dispatch<React.SetStateAction<Skill[]>>;
   isOpen : boolean;
   setIsOpen : React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const OneSection = (props: Props) => {
+const OneSkill = (props: Props) => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
 
   const [{ fetching, data }] = useQuery<
-    GetOneSectionQuery,
-    GetOneSectionQueryVariables
+    GetOneSkillQuery,
+    GetOneSkillQueryVariables
   >({
-    query: GetOneSectionDocument,
+    query: GetOneSkillDocument,
     variables: {
       id: props.id,
     },
+    pause: props.isCreate || props.isEdit,
   });
 
-  const [state, DeleteSectionExecute] = useMutation(DeleteSectionDocument);
+  const [state, DeleteSkillExecute] = useMutation(DeleteSkillDocument);
 
 
   const HandleDelete =async ()=>{
     
-    const deletedData : OperationResult<DeleteSectionMutation,DeleteSectionMutationVariables> = await DeleteSectionExecute({
+    const deletedData : OperationResult<DeleteSkillMutation,DeleteSkillMutationVariables> = await DeleteSkillExecute({
       id: props.id
     });
     
-    if(deletedData.data?.removeSection?.__typename){
+    if(deletedData.data?.removeSkill?.__typename){
       const deleted = props.data.filter((value , index)=>{
         return value.id !== props.id;
       })
@@ -60,30 +61,38 @@ const OneSection = (props: Props) => {
     setModalOpen(false)
 }
 
-  const Section = data?.section;
+  const Skill = data?.skill;
 
   return (
     <div>
       {props.isEdit ? (
-        <EditSection
+        <EditSkill
           key={1}
           setIsEdit={props.setIsEdit}
           isEdit={props.isEdit}
-          name={Section?.name as string}
-          id={Section?.id as number}
+          name={Skill?.name as string}
+          id={Skill?.id as number}
           data={props.data}
           setData={props.setData}
+          descriotion={Skill?.description as string}
+          shortName={Skill?.shortName as string}
         />
       ) : props.isCreate ? (
-        <CreateSection key={2} data={props.data} setData={props.setData} />
+        <CreateSkill key={2} data={props.data} setData={props.setData} />
       ) : (
         <div>
           {fetching ? (
             <p> loading... </p>
           ) : (
             <div>
-              <p>{Section?.name}</p>
-              <p>{Section?.id}</p>
+              <p>name</p>
+              <p className="text-blue-400">{Skill?.name}</p>
+              <p>id</p>
+              <p className="text-blue-400">{Skill?.id}</p>
+              <p>description</p>
+              <p className="text-blue-400">{Skill?.description}</p>
+              <p>ShortName</p>
+              <p className="text-blue-400">{Skill?.shortName}</p>
               <button
                 className="bg-blue-500"
                 onClick={() => {
@@ -112,4 +121,4 @@ const OneSection = (props: Props) => {
   );
 };
 
-export default OneSection;
+export default OneSkill;

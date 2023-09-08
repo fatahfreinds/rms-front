@@ -12,6 +12,7 @@ query GetOneTeam($id: Int!) {
     description
     shortName
     totalPoint
+    color
   }
 }
 

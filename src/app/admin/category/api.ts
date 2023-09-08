@@ -8,7 +8,7 @@ export async function UpdateCategory(data: UpdateCategoryInput ) {
     const name = data.name;
     const section = data.section;
     const id = data.id;
-    
+     
 
     if (name && section && id) {
         const { client } = getUrqlClient();

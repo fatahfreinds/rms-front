@@ -9,7 +9,7 @@ import {
   GetOneGradeQuery,
   GetOneGradeQueryVariables,
 } from "@/gql/graphql";
-import {  useState } from "react";
+import React, {  use, useEffect, useState } from "react";
 import { OperationResult, useMutation, useQuery } from "urql";
 import EditGrade from "./EditGrades";
 import CreateGrade from "./CreateGrades";
@@ -27,9 +27,8 @@ interface Props {
   setIsOpen : React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const OneGrade = (props: Props) => {
-  const [modalOpen, setModalOpen] = useState<boolean>(false);
 
+const OneGrade = (props: Props) => {
   const [{ fetching, data }] = useQuery<
     GetOneGradeQuery,
     GetOneGradeQueryVariables
@@ -38,7 +37,17 @@ const OneGrade = (props: Props) => {
     variables: {
       id: props.id,
     },
+    pause: props.isCreate || props.isEdit,
   });
+
+
+
+
+  const grade  = data?.grade;
+
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+
+  
 
   const [state, DeleteGradeExecute] = useMutation(DeleteGradeDocument);
 
@@ -60,7 +69,6 @@ const OneGrade = (props: Props) => {
     setModalOpen(false)
 }
 
-  const Grade = data?.grade;
 
   return (
     <div>
@@ -69,10 +77,14 @@ const OneGrade = (props: Props) => {
           key={1}
           setIsEdit={props.setIsEdit}
           isEdit={props.isEdit}
-          name={Grade?.name as string}
-          id={Grade?.id as number}
+          name={grade?.name as string}
+          id={grade?.id as number}
           data={props.data}
           setData={props.setData}
+          percentage={grade?.percentage as number}
+          pointGroup={grade?.pointGroup as number}
+          pointHouse={grade?.pointHouse as number}
+          pointSingle={grade?.pointSingle as number}
         />
       ) : props.isCreate ? (
         <CreateGrade key={2} data={props.data} setData={props.setData} />
@@ -82,8 +94,16 @@ const OneGrade = (props: Props) => {
             <p> loading... </p>
           ) : (
             <div>
-              <p>{Grade?.name}</p>
-              <p>{Grade?.id}</p>
+              <p>Name</p>
+              <p className="text-teal-500">{grade?.name}</p>
+              <p>Percentage</p>
+              <p className="text-teal-500">{grade?.percentage}</p>
+              <p>Point Single</p>
+              <p className="text-teal-500">{grade?.pointSingle}</p>
+              <p>Point Group</p>
+              <p className="text-teal-500">{grade?.pointGroup}</p>
+              <p>Point House</p>
+              <p className="text-teal-500">{grade?.pointHouse}</p>
               <button
                 className="bg-blue-500"
                 onClick={() => {

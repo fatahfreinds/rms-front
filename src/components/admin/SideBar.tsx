@@ -6,7 +6,7 @@ import {
   Candidates,
   Category,
   Credential,
-  Dashoard,
+  Dashboard as Dashoard,
   SectionIcon,
 } from "@/icons/navs";
 import { useRouter } from "next/navigation";
@@ -15,75 +15,75 @@ import React, { useContext, useEffect, useState } from "react";
 const AdminNavs = [
   {
     name: "Settings",
-    nav : 'settings',
+    nav: "settings",
     icon: <Dashoard className="w-8 h-8" />,
   },
   {
     name: "Category",
-    nav : 'category',
+    nav: "category",
     icon: <Category className="w-8 h-8" />,
   },
   {
     name: "Section",
-    nav : 'section',
+    nav: "section",
     icon: <SectionIcon className="w-8 h-8" />,
   },
   {
     name: "Credentials",
-    nav : 'credentials',
+    nav: "credentials",
     icon: <Credential className="w-8 h-8" />,
   },
   {
     name: "Skill",
-    nav : 'skill',
+    nav: "skill",
     icon: <Dashoard className="w-8 h-8" />,
   },
   {
     name: "Grade",
-    nav : 'grades',
+    nav: "grades",
     icon: <Dashoard className="w-8 h-8" />,
   },
-   {  
+  {
     name: "Position",
-    nav : 'position',
+    nav: "position",
     icon: <Dashoard className="w-8 h-8" />,
-  }, 
+  },
   {
     name: "Team",
-    nav : 'team',
+    nav: "team",
     icon: <Dashoard className="w-8 h-8" />,
-  }
+  },
 ];
 
 const ControllerNavs = [
   {
     name: "Rules",
-    nav : 'rules',
+    nav: "rules",
     icon: <Dashoard className="w-8 h-8" />,
   },
   {
     name: "Candidates",
-    nav : 'candidates',
+    nav: "candidates",
     icon: <Candidates className="w-8 h-8" />,
   },
   {
     name: "Programs",
-    nav : 'programs',
+    nav: "programmes",
     icon: <Candidates className="w-8 h-8" />,
   },
   {
     name: "Judges",
-    nav : 'judges',
+    nav: "judges",
     icon: <Dashoard className="w-8 h-8" />,
   },
   {
     name: "Substitute",
-    nav : 'substitute',
+    nav: "substitute",
     icon: <Dashoard className="w-8 h-8" />,
   },
   {
     name: "Results",
-    nav : 'results',
+    nav: "results",
     icon: <Dashoard className="w-8 h-8" />,
   },
 ];
@@ -91,45 +91,45 @@ const ControllerNavs = [
 const MediaNavs = [
   {
     name: "Feeds",
-    nav : 'feeds',
+    nav: "feeds",
     icon: <Candidates className="w-8 h-8" />,
   },
   {
     name: "Gallery",
-    nav : 'gallery',
+    nav: "gallery",
     icon: <Dashoard className="w-8 h-8" />,
   },
   {
     name: "Certificate",
-    nav : 'cartificate',
+    nav: "cartificate",
     icon: <Dashoard className="w-8 h-8" />,
   },
   {
     name: "Tags",
-    nav : 'tags',
+    nav: "tags",
     icon: <Dashoard className="w-8 h-8" />,
-  }
+  },
 ];
 
 const TeamManagerNavs = [
   {
     name: "Candidates",
-    nav : 'team-candidates',
+    nav: "team-candidates",
     icon: <Candidates className="w-8 h-8" />,
   },
   {
     name: "Programs",
-    nav : 'team-programs',  
+    nav: "team-programs",
     icon: <Dashoard className="w-8 h-8" />,
   },
   {
     name: "List",
-    nav : 'team-list',  
+    nav: "team-list",
     icon: <Dashoard className="w-8 h-8" />,
   },
   {
     name: "Results",
-    nav : 'team-results',
+    nav: "team-results",
     icon: <Dashoard className="w-8 h-8" />,
   },
 ];
@@ -159,8 +159,8 @@ const SideBar = () => {
   return (
     <div
       className={`${
-        isOpen ? "w-44" : "w-12"
-      } overflow-hidden h-[98vh]  rounded-lg transition-all duration-500  bg-slate-200 hidden md:flex flex-col`}
+        isOpen ? "w-56" : "w-20"
+      } overflow-hidden transition-all duration-500 text-base-100  bg-primary hidden  lg:flex flex-col p-4`}
     >
       <label className="swap swap-rotate w-12 my-2">
         <input type="checkbox" />
@@ -178,12 +178,9 @@ const SideBar = () => {
         />
       </label>
       <ul
-        className={`menu h-full w-full bg-base-200 text-base-content ${
-          isOpen ? "" : "px-0"
-        } transition-all`}
+        className={`menu h-full w-full ${isOpen ? "" : "px-0"} transition-all`}
       >
-        {/* Sidebar content here */}
-        <li className="p-0 w-1" onClick={()=> router.push('/admin')}>
+        <li className="p-0 w-1" onClick={() => router.push("/admin")}>
           <p
             className={` px-0 flex ${
               isOpen ? "w-40" : "w-12 items-center justify-center"
@@ -200,12 +197,15 @@ const SideBar = () => {
           </p>
         </li>
 
-        {
-        navs.map((nav, index) => (
-          <li key={index} className="p-0 w-1" onClick={()=> router.push(`/admin/${nav.nav}`)}>
+        {navs.map((nav, index) => (
+          <li
+            key={index}
+            className="p-0"
+            onClick={() => router.push(`/admin/${nav.nav}`)}
+          >
             <p
               className={` px-0 flex ${
-                isOpen ? "w-40" : "w-12 items-center justify-center"
+                isOpen ? "w-40" : "w-12 items-center justify-center "
               }`}
             >
               {nav.icon}
@@ -218,8 +218,7 @@ const SideBar = () => {
               </span>
             </p>
           </li>
-        ))
-        }
+        ))}
       </ul>
     </div>
   );

@@ -1,18 +1,18 @@
 "use client";
 import Modal from "@/components/Modal";
 import {
-  Section,
-  DeleteSectionDocument,
-  DeleteSectionMutation,
-  DeleteSectionMutationVariables,
-  GetOneSectionDocument,
-  GetOneSectionQuery,
-  GetOneSectionQueryVariables,
+  Team,
+  DeleteTeamDocument,
+  DeleteTeamMutation,
+  DeleteTeamMutationVariables,
+  GetOneTeamDocument,
+  GetOneTeamQuery,
+  GetOneTeamQueryVariables,
 } from "@/gql/graphql";
 import {  useState } from "react";
 import { OperationResult, useMutation, useQuery } from "urql";
-import EditSection from "./EditTeam";
-import CreateSection from "./CreateTeam";
+import EditTeam from "./EditTeam";
+import CreateTeam from "./CreateTeam";
 
 interface Props {
   id: number;
@@ -21,35 +21,36 @@ interface Props {
   setIsCreate: React.Dispatch<React.SetStateAction<boolean>>;
   isEdit: boolean;
   setIsEdit: React.Dispatch<React.SetStateAction<boolean>>;
-  data: Section[];
-  setData: React.Dispatch<React.SetStateAction<Section[]>>;
+  data: Team[];
+  setData: React.Dispatch<React.SetStateAction<Team[]>>;
   isOpen : boolean;
   setIsOpen : React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const OneSection = (props: Props) => {
+const OneTeam = (props: Props) => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
 
   const [{ fetching, data }] = useQuery<
-    GetOneSectionQuery,
-    GetOneSectionQueryVariables
+    GetOneTeamQuery,
+    GetOneTeamQueryVariables
   >({
-    query: GetOneSectionDocument,
+    query: GetOneTeamDocument,
     variables: {
       id: props.id,
     },
+    pause: props.isCreate || props.isEdit,
   });
 
-  const [state, DeleteSectionExecute] = useMutation(DeleteSectionDocument);
+  const [state, DeleteTeamExecute] = useMutation(DeleteTeamDocument);
 
 
   const HandleDelete =async ()=>{
     
-    const deletedData : OperationResult<DeleteSectionMutation,DeleteSectionMutationVariables> = await DeleteSectionExecute({
+    const deletedData : OperationResult<DeleteTeamMutation,DeleteTeamMutationVariables> = await DeleteTeamExecute({
       id: props.id
     });
     
-    if(deletedData.data?.removeSection?.__typename){
+    if(deletedData.data?.removeTeam?.__typename){
       const deleted = props.data.filter((value , index)=>{
         return value.id !== props.id;
       })
@@ -60,30 +61,41 @@ const OneSection = (props: Props) => {
     setModalOpen(false)
 }
 
-  const Section = data?.section;
+  const Team = data?.team;
 
   return (
     <div>
       {props.isEdit ? (
-        <EditSection
+        <EditTeam
           key={1}
           setIsEdit={props.setIsEdit}
           isEdit={props.isEdit}
-          name={Section?.name as string}
-          id={Section?.id as number}
+          name={Team?.name as string}
+          id={Team?.id as number}
           data={props.data}
           setData={props.setData}
+          color={Team?.color as string}
+          description={Team?.description as string}
+          shortName={Team?.shortName as string}
         />
       ) : props.isCreate ? (
-        <CreateSection key={2} data={props.data} setData={props.setData} />
+        <CreateTeam key={2} data={props.data} setData={props.setData} />
       ) : (
         <div>
           {fetching ? (
             <p> loading... </p>
           ) : (
             <div>
-              <p>{Section?.name}</p>
-              <p>{Section?.id}</p>
+              <p>name</p>
+              <p className="text-blue-400">{Team?.name}</p>
+              <p>id</p>
+              <p className="text-blue-400">{Team?.id}</p>
+              <p>color</p>
+              <p className="text-blue-400">{Team?.color}</p>
+              <p>description</p>
+              <p className="text-blue-400">{Team?.description}</p>
+              <p>ShortName</p>
+              <p className="text-blue-400">{Team?.shortName}</p>
               <button
                 className="bg-blue-500"
                 onClick={() => {
@@ -112,4 +124,4 @@ const OneSection = (props: Props) => {
   );
 };
 
-export default OneSection;
+export default OneTeam;

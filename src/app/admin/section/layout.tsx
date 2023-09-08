@@ -12,7 +12,7 @@ export default async function RootLayout({
 }) {
   
   return (
-    <main className="ms-3 w-full h-full flex"> 
+    <main className="lg:ms-3 w-full h-full flex"> 
     {children}    
   </main>
   );

@@ -1,10 +1,6 @@
 'use client';
-import { UpdateCategory } from "@/app/admin/category/api";
 import { Category, EditCategoryDocument, EditCategoryMutation, EditCategoryMutationVariables } from "@/gql/graphql";
-import { editCategorySchema } from "@/types/category";
-import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
-import { useForm } from "react-hook-form";
 import { OperationResult, useMutation } from "urql";
 
 interface Props {
@@ -21,13 +17,11 @@ const EditCategory = (props: Props) => {
 
   const [name, setName] = React.useState<string>(props.name);
   const [section, setSection] = React.useState<string>(props.section);
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   const [state, UpdateCategoryExecute] = useMutation(EditCategoryDocument);
 
 
   const HandleSubmit = async (data: any) => {
-    setIsLoading(true);
     const updatedData : OperationResult<EditCategoryMutation,EditCategoryMutationVariables> = await UpdateCategoryExecute({
       id: props.id,
       name: data.name,
@@ -44,13 +38,11 @@ const EditCategory = (props: Props) => {
           return value
         }
       })
-console.log(updatedDates);
 
     props.setData(updatedDates as Category[]);
     } else if(updatedData.error?.message) {
       alert(updatedData.error?.message.split(']')[1]);
     }
-    setIsLoading(false);
     props.setIsEdit(false);
   };
 
@@ -82,7 +74,7 @@ console.log(updatedDates);
           className="bg-fuchsia-600"
           type="submit"
         >
-          {isLoading ? "Loading..." : "Submit"}
+          {state.fetching ? "Loading..." : "Submit"}
         </button>
       </form>
     </div>

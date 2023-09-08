@@ -38,6 +38,7 @@ const OneCategory = (props: Props) => {
     variables: {
       id: props.id,
     },
+    pause: props.isCreate || props.isEdit,
   });
 
   const [state, DeleteCategoryExecute] = useMutation(DeleteCategoryDocument);

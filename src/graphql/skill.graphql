@@ -10,6 +10,7 @@ query GetOneSkill($id: Int!) {
     id
     name
     description
+    shortName
   }
 }
 

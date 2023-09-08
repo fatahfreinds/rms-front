@@ -1,58 +1,90 @@
 "use client";
-import { AddSectionDocument, AddSectionMutation, AddSectionMutationVariables, Section } from "@/gql/graphql";
-import { addSectionSchema } from "@/types/section"
-import { zodResolver } from "@hookform/resolvers/zod";
+import { AddPositionDocument, AddPositionMutation, AddPositionMutationVariables, Position } from "@/gql/graphql";
 import React from "react";
-import { useForm } from "react-hook-form";
 import { OperationResult, useMutation } from "urql";
 
 interface Props {
-  data : Section[]
-  setData : React.Dispatch<React.SetStateAction<Section[]>>
+  data: Position[]
+  setData: React.Dispatch<React.SetStateAction<Position[]>>
 }
 
-const CreateSection = (props: Props) => {
+const CreatePosition = (props: Props) => {
 
-  const [state, CreateSectionExecute] = useMutation(AddSectionDocument);
+  const [name, setName] = React.useState<string>('');
+  const [pointGroup, setPointGroup] = React.useState<number>();
+  const [pointHouse, setPointHouse] = React.useState<number>();
+  const [pointSingle, setPointSingle] = React.useState<number>();
+  const [value, setValue] = React.useState<number>();
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { isSubmitting },
-  } = useForm({
-    shouldUseNativeValidation: true,
-    resolver: zodResolver(addSectionSchema),
-  });
+  const [state, CreatePositionExecute] = useMutation(AddPositionDocument);
+
+
 
   const HandleSubmit = async (data: any) => {
-    const datas: OperationResult<AddSectionMutation,AddSectionMutationVariables> = await CreateSectionExecute({
-      name: data.name
+    const datas: OperationResult<AddPositionMutation, AddPositionMutationVariables> = await CreatePositionExecute({
+      name: data.name,
+      pointGroup: data.pointGroup,
+      pointHouse: data.pointHouse,
+      pointSingle: data.pointSingle,
+      value: data.value
     });
 
-    if (datas.data?.createSection) {
-      alert("Section Added");
-    props.setData([...props.data, datas.data?.createSection as Section]);
+    if (datas.data?.createPosition) {
+      alert("Position Added");
+      props.setData([...props.data, datas.data?.createPosition as Position]);
     } else {
-      alert("Section Not Added");
+      console.log(datas.error?.message.split(']')[1]);
+
+      alert("Position Not Added");
     }
-    reset();
   };
 
   return (
     <div>
-      <h1>Create Section</h1>
+      <h1>Create Position</h1>
 
       <form
-        onSubmit={handleSubmit(async (data) => {
-          await HandleSubmit(data);
-        })}
+        onSubmit={
+          (e) => {
+            e.preventDefault();
+            HandleSubmit({ name, pointGroup, pointHouse, pointSingle, value })
+          }
+        }
       >
-        <input type="text" {...register("name")} placeholder="name" />
+        <p>Name</p>
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+        <p>Point Group</p>
+        <input
+          type="number"
+          value={pointGroup}
+          onChange={(e) => setPointGroup(parseInt(e.target.value))}
+        />
+        <p>Point House</p>
+        <input
+          type="number"
+          value={pointHouse}
+          onChange={(e) => setPointHouse(parseInt(e.target.value))}
+        />
+        <p>Point Single</p>
+        <input
+          type="number"
+          value={pointSingle}
+          onChange={(e) => setPointSingle(parseInt(e.target.value))}
+        />
+        <p>Value</p>
+        <input
+          type="number"
+          value={value}
+          onChange={(e) => setValue(parseInt(e.target.value))}
+        />
         <button
           className="bg-fuchsia-600"
           type="submit"
-          disabled={isSubmitting}
+          disabled={state.fetching}
         >
           Submit
         </button>
@@ -61,4 +93,4 @@ const CreateSection = (props: Props) => {
   );
 };
 
-export default CreateSection;
+export default CreatePosition;

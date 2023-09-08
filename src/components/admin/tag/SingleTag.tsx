@@ -1,18 +1,18 @@
 "use client";
 import Modal from "@/components/Modal";
 import {
-  Section,
-  DeleteSectionDocument,
-  DeleteSectionMutation,
-  DeleteSectionMutationVariables,
-  GetOneSectionDocument,
-  GetOneSectionQuery,
-  GetOneSectionQueryVariables,
+  Tag,
+  DeleteTagDocument,
+  DeleteTagMutation,
+  DeleteTagMutationVariables,
+  GetOneTagDocument,
+  GetOneTagQuery,
+  GetOneTagQueryVariables,
 } from "@/gql/graphql";
 import {  useState } from "react";
 import { OperationResult, useMutation, useQuery } from "urql";
-import EditSection from "./EditTag";
-import CreateSection from "./CreateTag";
+import EditTag from "./EditTag";
+import CreateTag from "./CreateTag";
 
 interface Props {
   id: number;
@@ -21,35 +21,36 @@ interface Props {
   setIsCreate: React.Dispatch<React.SetStateAction<boolean>>;
   isEdit: boolean;
   setIsEdit: React.Dispatch<React.SetStateAction<boolean>>;
-  data: Section[];
-  setData: React.Dispatch<React.SetStateAction<Section[]>>;
+  data: Tag[];
+  setData: React.Dispatch<React.SetStateAction<Tag[]>>;
   isOpen : boolean;
   setIsOpen : React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const OneSection = (props: Props) => {
+const OneTag = (props: Props) => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
 
   const [{ fetching, data }] = useQuery<
-    GetOneSectionQuery,
-    GetOneSectionQueryVariables
+    GetOneTagQuery,
+    GetOneTagQueryVariables
   >({
-    query: GetOneSectionDocument,
+    query: GetOneTagDocument,
     variables: {
       id: props.id,
     },
+    pause: props.isCreate || props.isEdit,
   });
 
-  const [state, DeleteSectionExecute] = useMutation(DeleteSectionDocument);
+  const [state, DeleteTagExecute] = useMutation(DeleteTagDocument);
 
 
   const HandleDelete =async ()=>{
     
-    const deletedData : OperationResult<DeleteSectionMutation,DeleteSectionMutationVariables> = await DeleteSectionExecute({
+    const deletedData : OperationResult<DeleteTagMutation,DeleteTagMutationVariables> = await DeleteTagExecute({
       id: props.id
     });
     
-    if(deletedData.data?.removeSection?.__typename){
+    if(deletedData.data?.removeTag?.__typename){
       const deleted = props.data.filter((value , index)=>{
         return value.id !== props.id;
       })
@@ -60,30 +61,32 @@ const OneSection = (props: Props) => {
     setModalOpen(false)
 }
 
-  const Section = data?.section;
+  const Tag = data?.tag;
 
   return (
     <div>
       {props.isEdit ? (
-        <EditSection
+        <EditTag
           key={1}
           setIsEdit={props.setIsEdit}
           isEdit={props.isEdit}
-          name={Section?.name as string}
-          id={Section?.id as number}
+          name={Tag?.name as string}
+          id={Tag?.id as number}
           data={props.data}
           setData={props.setData}
         />
       ) : props.isCreate ? (
-        <CreateSection key={2} data={props.data} setData={props.setData} />
+        <CreateTag key={2} data={props.data} setData={props.setData} />
       ) : (
         <div>
           {fetching ? (
             <p> loading... </p>
           ) : (
             <div>
-              <p>{Section?.name}</p>
-              <p>{Section?.id}</p>
+              <p>name</p>
+              <p className="text-blue-400">{Tag?.name}</p>
+              <p>id</p>
+              <p className="text-blue-400">{Tag?.id}</p>
               <button
                 className="bg-blue-500"
                 onClick={() => {
@@ -112,4 +115,4 @@ const OneSection = (props: Props) => {
   );
 };
 
-export default OneSection;
+export default OneTag;

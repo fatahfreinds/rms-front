@@ -2,6 +2,7 @@ query GetAllGrades {
   grades {
     id
     name
+    percentage
   }
 }
 
@@ -9,6 +10,10 @@ query GetOneGrade($id: Int!) {
   grade(id: $id) {
     id
     name
+    percentage
+    pointGroup
+    pointHouse
+    pointSingle
   }
 }
 
@@ -28,8 +33,9 @@ mutation AddGrade(
       pointSingle: $pointSingle
     }
   ) {
-    id
+     id
     name
+    percentage
   }
 }
 
@@ -51,8 +57,9 @@ mutation EditGrade(
       pointSingle: $pointSingle
     }
   ) {
-    id
+     id
     name
+    percentage
   }
 }
 

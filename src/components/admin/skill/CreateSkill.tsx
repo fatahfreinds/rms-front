@@ -1,64 +1,69 @@
 "use client";
-import { AddSectionDocument, AddSectionMutation, AddSectionMutationVariables, Section } from "@/gql/graphql";
-import { addSectionSchema } from "@/types/section"
-import { zodResolver } from "@hookform/resolvers/zod";
+import { AddSkillDocument, AddSkillMutation, AddSkillMutationVariables, Skill } from "@/gql/graphql";
 import React from "react";
-import { useForm } from "react-hook-form";
 import { OperationResult, useMutation } from "urql";
 
 interface Props {
-  data : Section[]
-  setData : React.Dispatch<React.SetStateAction<Section[]>>
+  data: Skill[]
+  setData: React.Dispatch<React.SetStateAction<Skill[]>>
 }
 
-const CreateSection = (props: Props) => {
-
-  const [state, CreateSectionExecute] = useMutation(AddSectionDocument);
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { isSubmitting },
-  } = useForm({
-    shouldUseNativeValidation: true,
-    resolver: zodResolver(addSectionSchema),
-  });
+const CreateSkill = (props: Props) => {
+  const [name, setName] = React.useState<string>('');
+  const [shortName, setShortName] = React.useState<string>('');
+  const [description, setDescription] = React.useState<string>('');
+  const [state, CreateSkillExecute] = useMutation(AddSkillDocument);
+  
 
   const HandleSubmit = async (data: any) => {
-    const datas: OperationResult<AddSectionMutation,AddSectionMutationVariables> = await CreateSectionExecute({
-      name: data.name
+    const datas: OperationResult<AddSkillMutation, AddSkillMutationVariables> = await CreateSkillExecute({
+      name: data.name,
+      description: data.description,
+      shortName: data.shortName
     });
 
-    if (datas.data?.createSection) {
-      alert("Section Added");
-    props.setData([...props.data, datas.data?.createSection as Section]);
+    if (datas.data?.createSkill) {
+      alert("Skill Added");
+      props.setData([...props.data, datas.data?.createSkill as Skill]);
     } else {
-      alert("Section Not Added");
+      alert("Skill Not Added");
     }
-    reset();
   };
 
   return (
     <div>
-      <h1>Create Section</h1>
+      <h1>Create Skill</h1>
 
       <form
-        onSubmit={handleSubmit(async (data) => {
-          await HandleSubmit(data);
-        })}
+        onSubmit={
+          (e) => {
+            e.preventDefault();
+            HandleSubmit({ name, description, shortName })
+          }
+        }
       >
-        <input type="text" {...register("name")} placeholder="name" />
+        <input type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="name" />
+        <input type="text"
+          value={shortName}
+          onChange={(e) => setShortName(e.target.value)}
+          placeholder="shortName" />
+        <input type="text"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="description" />
         <button
           className="bg-fuchsia-600"
           type="submit"
-          disabled={isSubmitting}
+          disabled={state.fetching}
         >
-          Submit
+          {state.fetching ? "Loading" : "Create"}
         </button>
       </form>
     </div>
   );
 };
 
-export default CreateSection;
+export default CreateSkill;

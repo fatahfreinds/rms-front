@@ -1,12 +1,12 @@
 "use client";
 import InfoBar from "@/components/admin/InfoBar";
-import SingleSection from "@/components/admin/section/SingleSection";
+import SinglePosition from "@/components/admin/position/SinglePosition";
 import RightSideBar from "@/components/admin/RightSideBar";
 import { SERVER_URL } from "@/lib/urql";
 import { withUrqlClient } from "next-urql";
 import React, { useEffect, useState } from "react";
 import { cacheExchange, fetchExchange } from "urql";
-import { Section } from "@/gql/graphql";
+import { Position } from "@/gql/graphql";
 import Axios from "@/lib/Axios";
 
 interface Props {
@@ -14,16 +14,36 @@ interface Props {
     title: string;
     icon: any;
   }[];
-  result: Section[];
+  result: Position[];
 }
 
-const Section = (props: Props) => {
+const Position = (props: Props) => {
   const [IsRightSideBarOpen, setIsRightSideBarOpen] = useState(false);
-  const [SelectedSection, setSelectedSection] = useState({ id: 0, name: "" });
+  const [SelectedPosition, setSelectedPosition] = useState({ id: 0, name: "" });
   const [isCreate, setIsCreate] = useState(false);
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [search, setSearch] = useState<string>("");
-  const [data, setData] = useState<Section[]>(props.result);
+  const [data, setData] = useState<Position[]>(props.result);
+
+  function downloadExcel() {
+    const data = props.result;
+    const replacer = (key: any, value: any) => (value === null ? "" : value); // specify how you want to handle null values here
+    const header = Object.keys(data[0]);
+    let csv = data.map((row: any) =>
+      header
+        .map((fieldName) => JSON.stringify(row[fieldName], replacer))
+        .join(",")
+    );
+    csv.unshift(header.join(","));
+    let csvArray = csv.join("\r\n");
+
+    var a = document.createElement("a");
+    a.href = "data:attachment/csv," + csvArray;
+    a.target = "_Blank";
+    a.download = "Position.csv";
+    document.body.appendChild(a);
+    a.click();
+  }
 
   return (
     <>
@@ -52,6 +72,14 @@ const Section = (props: Props) => {
               </div>
               <div className="w-1/3 h-full float-left">
                 <button
+                  className="bg-blue-600"
+                  onClick={downloadExcel}
+                >
+                  Export
+                </button>
+              </div>
+              <div className="w-1/3 h-full float-left">
+                <button
                   className="bg-green-600"
                   onClick={() => {
                     setIsCreate(true);
@@ -74,7 +102,7 @@ const Section = (props: Props) => {
                     className="w-full h-full bg-base-100 rounded-lg mt-[1%] cursor-pointer "
                     onClick={() => {
                       setIsRightSideBarOpen(true);
-                      setSelectedSection(item);
+                      setSelectedPosition(item);
                       setIsEdit(false);
                       setIsCreate(false);
                     }}
@@ -84,6 +112,9 @@ const Section = (props: Props) => {
                     </div>
                     <div className="w-1/3 ">
                       <p className="text-base-content">{item.id}</p>
+                    </div>
+                    <div className="w-1/3 ">
+                      <p className="text-base-content">{item.value}</p>
                     </div>
                   </div>
                 );
@@ -97,12 +128,12 @@ const Section = (props: Props) => {
         isOpen={IsRightSideBarOpen}
         setIsOpen={setIsRightSideBarOpen}
       >
-        <SingleSection
+        <SinglePosition
           isOpen={IsRightSideBarOpen}
           setIsOpen={setIsRightSideBarOpen}
           key={3}
-          name={SelectedSection.name}
-          id={SelectedSection.id}
+          name={SelectedPosition.name}
+          id={SelectedPosition.id}
           isEdit={isEdit}
           setIsEdit={setIsEdit}
           isCreate={isCreate}
@@ -122,4 +153,4 @@ export default withUrqlClient(() => ({
     cache: "no-cache",
     credentials: "include",
   },
-}))(Section);
+}))(Position);

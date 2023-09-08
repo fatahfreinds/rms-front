@@ -1,64 +1,57 @@
 "use client";
-import { AddSectionDocument, AddSectionMutation, AddSectionMutationVariables, Section } from "@/gql/graphql";
-import { addSectionSchema } from "@/types/section"
-import { zodResolver } from "@hookform/resolvers/zod";
+import { AddTagDocument, AddTagMutation, AddTagMutationVariables, Tag } from "@/gql/graphql";
 import React from "react";
-import { useForm } from "react-hook-form";
 import { OperationResult, useMutation } from "urql";
 
 interface Props {
-  data : Section[]
-  setData : React.Dispatch<React.SetStateAction<Section[]>>
+  data: Tag[]
+  setData: React.Dispatch<React.SetStateAction<Tag[]>>
 }
 
-const CreateSection = (props: Props) => {
-
-  const [state, CreateSectionExecute] = useMutation(AddSectionDocument);
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { isSubmitting },
-  } = useForm({
-    shouldUseNativeValidation: true,
-    resolver: zodResolver(addSectionSchema),
-  });
+const CreateTag = (props: Props) => {
+  const [name, setName] = React.useState<string>('');
+  const [state, CreateTagExecute] = useMutation(AddTagDocument);
+  
 
   const HandleSubmit = async (data: any) => {
-    const datas: OperationResult<AddSectionMutation,AddSectionMutationVariables> = await CreateSectionExecute({
+    const datas: OperationResult<AddTagMutation, AddTagMutationVariables> = await CreateTagExecute({
       name: data.name
     });
 
-    if (datas.data?.createSection) {
-      alert("Section Added");
-    props.setData([...props.data, datas.data?.createSection as Section]);
+    if (datas.data?.createTag) {
+      alert("Tag Added");
+      props.setData([...props.data, datas.data?.createTag as Tag]);
     } else {
-      alert("Section Not Added");
+      alert("Tag Not Added");
     }
-    reset();
   };
 
   return (
     <div>
-      <h1>Create Section</h1>
+      <h1>Create Tag</h1>
 
       <form
-        onSubmit={handleSubmit(async (data) => {
-          await HandleSubmit(data);
-        })}
+        onSubmit={
+          (e) => {
+            e.preventDefault();
+            HandleSubmit({ name})
+          }
+        }
       >
-        <input type="text" {...register("name")} placeholder="name" />
+        <input type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="name" />
         <button
           className="bg-fuchsia-600"
           type="submit"
-          disabled={isSubmitting}
+          disabled={state.fetching}
         >
-          Submit
+          {state.fetching ? "Loading" : "Create"}
         </button>
       </form>
     </div>
   );
 };
 
-export default CreateSection;
+export default CreateTag;

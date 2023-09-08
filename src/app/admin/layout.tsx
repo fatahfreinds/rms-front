@@ -19,21 +19,18 @@ export default function RootLayout({
     console.log("cookie", cookie);
   }
 
-  
-
   return (
-      <div className="flex px-[1vw] py-[1vh] w-screen h-screen overflow-hidden">
-     { !cookie ? (
-          <div className="flex flex-col items-center justify-center w-full h-full">
-            <h1 className="text-3xl font-bold">Login</h1>
-          </div>
-        ) :
-         (
-          <>
-            <SideBar />
-            {children}
-          </>
-        )}
-      </div>
+    <div className="flex w-screen  lg:h-screen  overflow-y-scroll  lg:overflow-x-hidden lg:overflow-y-hidden">
+      {!cookie ? (
+        <div className="flex flex-col items-center justify-center w-full h-full">
+          <h1 className="text-3xl font-bold">Login</h1>
+        </div>
+      ) : (
+        <>
+          <SideBar />
+          <div className="px-6 pt-6 flex-1">{children}</div>
+        </>
+      )}
+    </div>
   );
 }

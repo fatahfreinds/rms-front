@@ -1,4 +1,5 @@
 import {  EditSectionDocument, EditSectionMutation, EditSectionMutationVariables, Section } from '@/gql/graphql';
+import { ChevronRight } from '@/icons/arrows';
 import React from 'react'
 import { OperationResult, useMutation } from 'urql';
 
@@ -49,29 +50,44 @@ const EditSection = (props : Props) => {
   
   
     return (
-      <div>
-        <button className="bg-green-500" onClick={() => props.setIsEdit(false)}>
-          Back
-        </button>
-        <h1>Edit Section</h1>
+      <div className='w-full h-full flex justify-between'>
+        
   
         <form
+        className='w-full h-full flex justify-between flex-col'
           onSubmit={(e)=> {
             e.preventDefault();
             HandleSubmit({name})
           }}
         >
+          <div>
+
           <input
+          className='input input-bordered input-secondary w-full max-w-xs'
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
+          </div>
+          <div className="w-full  mt-4 flex items-center justify-between">
           <button
-            className="bg-fuchsia-600"
             type="submit"
+            className="bg-secondary w-1/2 border-2 text-white px-3 flex-1 py-2 border-secondary rounded-xl font-bold"
           >
             {isLoading ? "Loading..." : "Submit"}
           </button>
+
+          <div
+            className="w-1/2 flex items-center justify-center tooltip"
+            data-tip="Back"
+          >
+            <ChevronRight
+              className="w-7 h-7 cursor-pointer fill-secondary  transition-all  "
+              SetOpen={props.setIsEdit}
+              open={props.isEdit}
+            />
+          </div>
+        </div>
         </form>
       </div>
     );

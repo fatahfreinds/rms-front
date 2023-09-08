@@ -1,64 +1,76 @@
 "use client";
-import { AddSectionDocument, AddSectionMutation, AddSectionMutationVariables, Section } from "@/gql/graphql";
-import { addSectionSchema } from "@/types/section"
-import { zodResolver } from "@hookform/resolvers/zod";
+import { AddTeamDocument, AddTeamMutation, AddTeamMutationVariables, Team } from "@/gql/graphql";
 import React from "react";
-import { useForm } from "react-hook-form";
 import { OperationResult, useMutation } from "urql";
 
 interface Props {
-  data : Section[]
-  setData : React.Dispatch<React.SetStateAction<Section[]>>
+  data: Team[]
+  setData: React.Dispatch<React.SetStateAction<Team[]>>
 }
 
-const CreateSection = (props: Props) => {
-
-  const [state, CreateSectionExecute] = useMutation(AddSectionDocument);
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { isSubmitting },
-  } = useForm({
-    shouldUseNativeValidation: true,
-    resolver: zodResolver(addSectionSchema),
-  });
+const CreateTeam = (props: Props) => {
+  const [name, setName] = React.useState<string>('');
+  const [color, setColor] = React.useState<string>('');
+  const [description, setDescription] = React.useState<string>('');
+  const [shortName, setShortName] = React.useState<string>('');
+  const [state, CreateTeamExecute] = useMutation(AddTeamDocument);
+  
 
   const HandleSubmit = async (data: any) => {
-    const datas: OperationResult<AddSectionMutation,AddSectionMutationVariables> = await CreateSectionExecute({
-      name: data.name
+    const datas: OperationResult<AddTeamMutation, AddTeamMutationVariables> = await CreateTeamExecute({
+      name: data.name,
+      color: data.color,
+      description: data.description,
+      shortName: data.shortName
     });
 
-    if (datas.data?.createSection) {
-      alert("Section Added");
-    props.setData([...props.data, datas.data?.createSection as Section]);
+    if (datas.data?.createTeam) {
+      alert("Team Added");
+      props.setData([...props.data, datas.data?.createTeam as Team]);
     } else {
-      alert("Section Not Added");
+      alert("Team Not Added");
     }
-    reset();
   };
 
   return (
     <div>
-      <h1>Create Section</h1>
+      <h1>Create Team</h1>
 
       <form
-        onSubmit={handleSubmit(async (data) => {
-          await HandleSubmit(data);
-        })}
+        onSubmit={
+          (e) => {
+            e.preventDefault();
+            HandleSubmit({ name})
+          }
+        }
       >
-        <input type="text" {...register("name")} placeholder="name" />
+        <input type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="name" />
+        <input type="text"
+          value={color}
+          onChange={(e) => setColor(e.target.value)}
+          placeholder="color" />
+        <input type="text"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="description" />
+        <input type="text"
+          value={shortName}
+          onChange={(e) => setShortName(e.target.value)}
+          placeholder="shortName" />
+          
         <button
           className="bg-fuchsia-600"
           type="submit"
-          disabled={isSubmitting}
+          disabled={state.fetching}
         >
-          Submit
+          {state.fetching ? "Loading" : "Create"}
         </button>
       </form>
     </div>
   );
 };
 
-export default CreateSection;
+export default CreateTeam;

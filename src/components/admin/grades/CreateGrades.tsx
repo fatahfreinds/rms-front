@@ -1,9 +1,6 @@
 "use client";
 import { AddGradeDocument, AddGradeMutation, AddGradeMutationVariables, Grade } from "@/gql/graphql";
-import { addGradeSchema } from "@/types/grades"
-import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
-import { useForm } from "react-hook-form";
+import React, { useState } from "react";
 import { OperationResult, useMutation } from "urql";
 
 interface Props {
@@ -12,18 +9,14 @@ interface Props {
 }
 
 const CreateGrade = (props: Props) => {
+  const [name, setName] = useState<string>('');
+  const [percentage, setPercentage] = useState<number>();
+  const [pointGroup, setPointGroup] = useState<number>();
+  const [pointHouse, setPointHouse] = useState<number>();
+  const [pointSingle, setPointSingle] = useState<number>();
 
   const [state, CreateGradeExecute] = useMutation(AddGradeDocument);
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { isSubmitting },
-  } = useForm({
-    shouldUseNativeValidation: true,
-    resolver: zodResolver(addGradeSchema),
-  });
 
   const HandleSubmit = async (data: any) => {
     const datas: OperationResult<AddGradeMutation,AddGradeMutationVariables> = await CreateGradeExecute({
@@ -38,9 +31,10 @@ const CreateGrade = (props: Props) => {
       alert("Grade Added");
     props.setData([...props.data, datas.data?.createGrade as Grade]);
     } else {
+      console.log(datas.error?.message);
+      
       alert("Grade Not Added");
     }
-    reset();
   };
 
   return (
@@ -48,17 +42,48 @@ const CreateGrade = (props: Props) => {
       <h1>Create Grade</h1>
 
       <form
-        onSubmit={handleSubmit(async (data) => {
-          await HandleSubmit(data);
-        })}
+        onSubmit={
+          (e) => {
+            e.preventDefault();
+            HandleSubmit({ name, percentage, pointGroup, pointHouse, pointSingle })
+          }
+        }
       >
-        <input type="text" {...register("name")} placeholder="name" />
+        <input type="text" 
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+         placeholder="name" />
+        <input
+          type="number"
+          value={percentage}
+          onChange={(e) => setPercentage(parseInt(e.target.value))}
+          placeholder="percentage"
+        />
+        <input
+          type="number"
+          value={pointGroup}
+          onChange={(e) => setPointGroup(parseInt(e.target.value))}
+          placeholder="pointGroup"
+        />
+        <input
+          type="number"
+          value={pointHouse}
+          onChange={(e) => setPointHouse(parseInt(e.target.value))}
+          placeholder="pointHouse"
+        />
+        <input
+          type="number"
+          value={pointSingle}
+          onChange={(e) => setPointSingle(parseInt(e.target.value))}
+          placeholder="pointSingle"
+        />
+        <br />
         <button
           className="bg-fuchsia-600"
           type="submit"
-          disabled={isSubmitting}
+          disabled={state.fetching}
         >
-          Submit
+           {state.fetching ? "Loading..." : "Submit"}
         </button>
       </form>
     </div>

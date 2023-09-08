@@ -4,14 +4,12 @@ import OneCategory from "@/components/admin/category/SingleCategory";
 import RightSideBar from "@/components/admin/RightSideBar";
 import { SERVER_URL } from "@/lib/urql";
 import { withUrqlClient } from "next-urql";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { cacheExchange, fetchExchange } from "urql";
-import CreateCategory from "./CreateCategory";
-import { Category, CheckLoggedInDocument } from "@/gql/graphql";
-import Axios from "@/lib/Axios";
+import { Category } from "@/gql/graphql";
 
 interface Props {
-  data: {
+  data: { 
     title: string;
     icon: any;
   }[];
@@ -25,6 +23,28 @@ const Category = (props: Props) => {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [search, setSearch] = useState<string>("");
   const [data, setData] = useState<Category[]>(props.result);
+
+  // write a function for download the result as excel file with border and header
+
+  function downloadExcel() {
+    const data = props.result;
+    const replacer = (key: any, value: any) => (value === null ? "" : value); // specify how you want to handle null values here
+    const header = Object.keys(data[0]);
+    let csv = data.map((row: any) =>
+      header
+        .map((fieldName) => JSON.stringify(row[fieldName], replacer))
+        .join(",")
+    );
+    csv.unshift(header.join(","));
+    let csvArray = csv.join("\r\n");
+
+    var a = document.createElement("a");
+    a.href = "data:attachment/csv," + csvArray;
+    a.target = "_Blank";
+    a.download = "Category.csv";
+    document.body.appendChild(a);
+    a.click();
+  }
 
 
   return (
@@ -54,6 +74,14 @@ const Category = (props: Props) => {
               </div>
               <div className="w-1/3 h-full float-left">
                 <button
+                  className="bg-blue-600"
+                  onClick={downloadExcel}
+                >
+                  Export
+                </button>
+              </div>
+              <div className="w-1/3 h-full float-left">
+                <button
                   className="bg-green-600"
                   onClick={() => {
                     setIsCreate(true);
@@ -69,34 +97,34 @@ const Category = (props: Props) => {
 
           <div className="flex">
 
-       <div className="grid grid-cols-4 gap-4 w-full">
-          {data?.map((item: any, index: number) => {
-            return (
-              <div
-                key={index}
-                className="w-full h-full bg-base-100 rounded-lg mt-[1%] cursor-pointer "
-                onClick={() => {
-                  setIsRightSideBarOpen(true);
-                  setSelectedCategory(item);
-                  setIsEdit(false);
-                  setIsCreate(false);
-                }}
-              >
-                <div className="w-1/3">
-                  <p className="text-base-content">{item.name}</p>
-                </div>
-                <div className="w-1/3 ">
-                  <p className="text-base-content">{item.id}</p>
-                </div>
-              </div>
-            );
-          })}
+            <div className="grid grid-cols-4 gap-4 w-full">
+              {data?.map((item: any, index: number) => {
+                return (
+                  <div
+                    key={index}
+                    className="w-full h-full bg-base-100 rounded-lg mt-[1%] cursor-pointer "
+                    onClick={() => {
+                      setIsRightSideBarOpen(true);
+                      setSelectedCategory(item);
+                      setIsEdit(false);
+                      setIsCreate(false);
+                    }}
+                  >
+                    <div className="w-1/3">
+                      <p className="text-base-content">{item.name}</p>
+                    </div>
+                    <div className="w-1/3 ">
+                      <p className="text-base-content">{item.id}</p>
+                    </div>
+                  </div>
+                );
+              })}
+
+
+            </div>
 
 
           </div>
-
-           
-      </div>    
         </div>
       </div>
       <RightSideBar

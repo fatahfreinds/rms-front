@@ -7,7 +7,6 @@ import { withUrqlClient } from "next-urql";
 import React, { useEffect, useState } from "react";
 import { cacheExchange, fetchExchange } from "urql";
 import { Grade } from "@/gql/graphql";
-import Axios from "@/lib/Axios";
 
 interface Props {
   data: {
@@ -19,11 +18,31 @@ interface Props {
 
 const Grade = (props: Props) => {
   const [IsRightSideBarOpen, setIsRightSideBarOpen] = useState(false);
-  const [SelectedGrade, setSelectedGrade] = useState({ id: 0, name: "" });
+  const [SelectedGrade, setSelectedGrade] = useState<Grade>({ id: 0, name: "" });
   const [isCreate, setIsCreate] = useState(false);
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [search, setSearch] = useState<string>("");
   const [data, setData] = useState<Grade[]>(props.result);
+
+  function downloadExcel() {
+    const data = props.result;
+    const replacer = (key: any, value: any) => (value === null ? "" : value); // specify how you want to handle null values here
+    const header = Object.keys(data[0]);
+    let csv = data.map((row: any) =>
+      header
+        .map((fieldName) => JSON.stringify(row[fieldName], replacer))
+        .join(",")
+    );
+    csv.unshift(header.join(","));
+    let csvArray = csv.join("\r\n");
+
+    var a = document.createElement("a");
+    a.href = "data:attachment/csv," + csvArray;
+    a.target = "_Blank";
+    a.download = "Grades.csv";
+    document.body.appendChild(a);
+    a.click();
+  }
 
   return (
     <>
@@ -52,6 +71,14 @@ const Grade = (props: Props) => {
               </div>
               <div className="w-1/3 h-full float-left">
                 <button
+                  className="bg-blue-600"
+                  onClick={downloadExcel}
+                >
+                  Export
+                </button>
+              </div>
+              <div className="w-1/3 h-full float-left">
+                <button
                   className="bg-green-600"
                   onClick={() => {
                     setIsCreate(true);
@@ -67,14 +94,14 @@ const Grade = (props: Props) => {
 
           <div className="flex">
             <div className="grid grid-cols-4 gap-4 w-full">
-              {data?.map((item: any, index: number) => {
+              {data?.map((item: Grade, index: number) => {
                 return (
                   <div
                     key={index}
                     className="w-full h-full bg-base-100 rounded-lg mt-[1%] cursor-pointer "
                     onClick={() => {
                       setIsRightSideBarOpen(true);
-                      setSelectedGrade(item);
+                      setSelectedGrade(item as any);
                       setIsEdit(false);
                       setIsCreate(false);
                     }}
@@ -83,7 +110,7 @@ const Grade = (props: Props) => {
                       <p className="text-base-content">{item.name}</p>
                     </div>
                     <div className="w-1/3 ">
-                      <p className="text-base-content">{item.id}</p>
+                      <p className="text-base-content">{item.percentage}</p>
                     </div>
                   </div>
                 );
@@ -101,8 +128,8 @@ const Grade = (props: Props) => {
           isOpen={IsRightSideBarOpen}
           setIsOpen={setIsRightSideBarOpen}
           key={3}
-          name={SelectedGrade.name}
-          id={SelectedGrade.id}
+          name={SelectedGrade.name as string}
+          id={SelectedGrade.id as number}
           isEdit={isEdit}
           setIsEdit={setIsEdit}
           isCreate={isCreate}

@@ -12,7 +12,7 @@ const page = async () => {
     GetAllSectionsQueryVariables
   >(GetAllSectionsDocument, {});
 
-  const data = [
+  const data = [ 
     {
       title: "Total Users",
       icon: <SectionIcon className="w-6 h-6 text-teal-600"/>
@@ -32,7 +32,7 @@ const page = async () => {
   ];
  const h = data[0]
   return (
-    <main className="w-full h-full flex ">
+    <main className="w-full h-full flex overflow-hidden">
       <Section key={1} data={data} result={result.data?.sections} pageProps={1}/>
     </main>
   );
