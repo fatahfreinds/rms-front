@@ -6,8 +6,8 @@ interface Props {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   children: React.ReactNode;
-  isEdit: boolean;
-  isCreate: boolean;
+  isEdit?: boolean;
+  isCreate?: boolean;
 }
 
 const RightSideBar = (props: Props) => {
@@ -25,8 +25,8 @@ const RightSideBar = (props: Props) => {
         </p>
         <ChevronLeft
           className="w-7 h-7 cursor-pointer fill-accent  transition-all"
-          SetOpen={props.setIsOpen}
-          open={props.isOpen}
+          SetOpen={props.setIsOpen }
+          open={props.isOpen }
         />
       </div>
 
